@@ -1,0 +1,249 @@
+
+.PaidUserDashboardContainer{
+max-width: 1000px;
+margin: 20px auto;
+}
+
+.Polaris-LegacyCard__Section{
+    transition: all ease-in-out .2s;
+  }
+  .Polaris-LegacyCard__Section:hover{
+    background-color: #e7e7e787;
+  }
+
+.Polaris-Modal-Dialog__Modal{
+max-width: 90% !important;
+width: 100% !important; 
+
+  }
+  .flex-table-child{
+    width: 25%;
+    display: flex;
+    column-gap: 15px;
+  }
+  .label_table_heading{
+    font-size: 17px;
+    font-weight: 700;
+    
+  }
+  .text-center{
+    text-align: center;
+  }
+ 
+
+
+.Polaris-Select__Icon {
+  display: none;
+}
+
+.custom_parent_div{
+  width: 90% !important;
+}
+
+
+.preview_label_container.top-left {
+  top: 5px;
+  left: 5px;
+}
+.preview_label_container.top-center {
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.preview_label_container.top-right {
+  top: 5px;
+  right: 5px;
+}
+.preview_label_container.middle-left {
+  top: 50%;
+  transform: translateY(-50%);
+  left: 5px;
+}
+.preview_label_container.middle-center {
+  top: 50%;
+  transform: translateY(-50%);
+  left: 50%;
+  transform: translateX(-50%);
+}
+.preview_label_container.middle-right {
+  top: 50%;
+  transform: translateY(-50%);
+  right: 5px;
+}
+
+.preview_label_container.bottom-left {
+  bottom: 5px;
+  left: 5px;
+}
+.preview_label_container.bottom-center {
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.preview_label_container.bottom-right {
+  bottom: 5px;
+  right: 5px;
+}
+
+
+#rotate {
+  transform: rotate(360deg);
+  transition: all ease-in 2s;
+  animation: rotation 2s infinite !important;
+}
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/*for bounce for bottom icon*/
+#bounce {
+  animation: bounce 1s infinite !important;
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-5px);
+  }
+}
+
+#pulse {
+  animation: shadow-pulse 1s infinite !important;
+}
+@keyframes shadow-pulse {
+  0% {
+    box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 25px rgba(0, 0, 0, 0);
+  }
+}
+
+/*for wiggle icon*/
+#wiggle {
+  animation: wiggle 0.5s infinite !important;
+  animation-timing-function: linear;
+}
+
+@keyframes wiggle {
+  0% {
+    transform: translate(2px, 0);
+  }
+  50% {
+    transform: translate(-2px, 0);
+  }
+  100% {
+    transform: translate(2px, 0);
+  }
+}
+
+@keyframes wiggle {
+  0% {
+    transform: translate(2px, 0);
+  }
+  50% {
+    transform: translate(-2px, 0);
+  }
+  100% {
+    transform: translate(2px, 0);
+  }
+}
+
+#focus {
+  animation-name: focus !important;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+}
+@keyframes focus {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+.input-switch{
+	display: none;
+}
+
+.label-switch{
+	display: inline-block;
+	position: relative;
+}
+
+.label-switch::before, .label-switch::after{
+	content: "";
+	display: inline-block;
+	cursor: pointer;
+	transition: all 0.5s;
+}
+
+.label-switch::before {
+    width: 3em;
+    height: 1em;
+    border: 1px solid #757575;
+    border-radius: 4em;
+    background: #888888;
+}
+
+.label-switch::after {
+    position: absolute;
+    left: 0;
+    top: -20%;
+    width: 1.5em;
+    height: 1.5em;
+    border: 1px solid #757575;
+    border-radius: 4em;
+    background: #ffffff;
+}
+
+.input-switch:checked ~ .label-switch::before {
+    background: #00a900;
+    border-color: #008e00;
+}
+
+.input-switch:checked ~ .label-switch::after {
+    left: unset;
+    right: 0;
+    background: #00ce00;
+    border-color: #009a00;
+}
+
+.info-text {
+	display: inline-block;
+}
+
+.info-text::before{
+	content: "Deactive";
+}
+
+.input-switch:checked ~ .info-text::before{
+	content: "Active";
+}
+
+.ative-deactive-label-container{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+}
+.label_name_container {
+  margin: 10px 0;
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

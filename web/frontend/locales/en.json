@@ -1,0 +1,25 @@
+{
+  "app": {
+    "name": "WEB-Label-pro"
+  },
+  "dashboard": {
+    "title": "Dashboard"
+  
+  },
+  "plans": {
+    "title": " Subscription Plans"
+  },"settings": {
+    "title": "Settings",
+    "general-settings":{
+"title":"General Settings"
+    }
+  },"NotFound":{
+    "heading":"Page Not Found",
+    "description":"404 Page Not Found"
+  },"user-guide":{
+    "title":"User Guide"
+  },"seo-audit":{
+    "title":"SEO Audit"
+  }
+
+}

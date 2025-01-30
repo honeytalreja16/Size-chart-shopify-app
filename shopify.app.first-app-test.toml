@@ -1,0 +1,28 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "738e56dadf9e397d768ca8cba31814ad"
+name = "First app test"
+handle = "first-app-test-36"
+application_url = "https://knives-retreat-tales-cs.trycloudflare.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "honey-talreja.myshopify.com"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_products"
+
+[auth]
+redirect_urls = [
+  "https://knives-retreat-tales-cs.trycloudflare.com/auth/callback",
+  "https://knives-retreat-tales-cs.trycloudflare.com/auth/shopify/callback",
+  "https://knives-retreat-tales-cs.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2025-01"
+
+[pos]
+embedded = false
