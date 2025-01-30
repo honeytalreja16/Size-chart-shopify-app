@@ -21,7 +21,7 @@ import {Select} from '@shopify/polaris';
 import { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
-import { _dispatch_UPDATE_SETTINGS_DETAILS } from "../../redux/actions/webiatorActions";
+import { _dispatch_UPDATE_SETTINGS_DETAILS } from "../../redux/actions/webiatorActions"; 
 
 const FirstAppSeting = () => {
   const [selected, setSelected] = useState('snowboard');
