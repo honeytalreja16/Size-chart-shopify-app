@@ -13,39 +13,50 @@ import {
   Combobox,
   Icon,
   Tag,
-  
-  
+  Modal,
+  DataTable,
+  TextField,
 } from "@shopify/polaris";
 import {SearchIcon} from '@shopify/polaris-icons';
-import {Select} from '@shopify/polaris';
+import {
+  DeleteIcon
+} from '@shopify/polaris-icons';
+import {
+  EditIcon
+} from '@shopify/polaris-icons';
 import { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { _dispatch_UPDATE_SETTINGS_DETAILS } from "../../redux/actions/webiatorActions"; 
 
-const FirstAppSeting = () => {
+
+
+const FirstAppSeting = () => {    
   const [selected, setSelected] = useState('snowboard');
-  const [productData,setProductData] = useState()
+  const [title, setTitle] = useState('');
+  const [connectingCollection,setConnectingCollection] = useState()
+  const [productData,setProductData] = useState([])
+  const [collectionData,setCollectionData] = useState([])
   const [imagePath, setImagePath] = useState("");
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState();
-  const [newsletter, setNewsletter] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
+  const [newsletter, setNewsletter] = useState(false);    
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
   const [productsOptions,setProductsOptions] = useState([])
-  
   const [selectedOptions, setSelectedOptions] = useState([]);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState('');    
   const [options, setOptions] = useState(productsOptions);
+  const [collectionOptions,setCollectionOptions] = useState([])
+  const [selectedOptionsCollection, setSelectedOptionsCollection] = useState([]);
+  const [inputValueCollection, setInputValueCollection] = useState('');    
+  const [optionsCollection, setOptionsCollection] = useState(collectionOptions);
 
   const escapeSpecialRegExCharacters = useCallback(
     (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
     [],
   );
-
+ 
   const updateText = useCallback(
     (value) => {
       setInputValue(value);
@@ -67,15 +78,31 @@ const FirstAppSeting = () => {
   const updateSelection = useCallback(
     (selected) => {
       console.log(selected)
-      if (selectedOptions.includes(selected)) {
+      const updatedSelectedOptions = productsOptions.find(
+        (option) => option._id === selected
+      );
+
+      const isSelected = selectedOptions.findIndex(
+        (option) => option._id === updatedSelectedOptions._id
+      );
+
+      if (isSelected > -1) {
         setSelectedOptions(
-          selectedOptions.filter((option) => option !== selected),
+          selectedOptions.filter(
+            (option) => option._id !== updatedSelectedOptions._id
+          )
         );
       } else {
-        setSelectedOptions([...selectedOptions, selected]);
+        setSelectedOptions([
+          ...selectedOptions,
+          {
+            value: updatedSelectedOptions?.value,
+            _id: updatedSelectedOptions?._id,
+          },
+        ]);
       }
 
-      updateText('');
+      updateText("");
     },
     [selectedOptions, updateText],
   );
@@ -89,26 +116,33 @@ const FirstAppSeting = () => {
     [selectedOptions],
   );
 
-  const tagsMarkup = selectedOptions.map((option) => (
+  useEffect(()=>{ 
+    console.log(selectedOptions,"stt---")
+  },[selectedOptions])
+  
+
+  const tagsMarkup = selectedOptions?.map((option) => (
     <Tag key={`option-${option}`} onRemove={removeTag(option)}>
-      {option}
+      {option.value} 
     </Tag>
   ));
-
+           
   const optionsMarkup =
     options.length > 0
       ? options.map((option) => {
-          const {label, value} = option;
-
-          return (
-            <Listbox.Option
-              key={`${value}`}
-              value={label}
-              selected={selectedOptions.includes(label)}
-              accessibilityLabel={label}
-            >
-              {label}
-            </Listbox.Option>
+        const { label, value, _id } = option;
+        return (
+          <Listbox.Option
+            key={_id}
+            value={_id}
+            selected={selectedOptions.some(
+              (selected) => selected?._id === _id
+            )}
+          
+            accessibilityLabel={label}
+          >
+            {label}
+          </Listbox.Option>
           );
         })
       : null;
@@ -116,49 +150,151 @@ const FirstAppSeting = () => {
   const { settingsDataLoading, settingsData } = useSelector(
     (state) => state.webiator
   );
+
+
+  // -======Multi collection =====
+
+
+  const escapeSpecialRegExCharactersCollection = useCallback(
+    (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+    [],
+  );
+ 
+  const updateTextCollection = useCallback(
+    (value) => {
+      setInputValueCollection(value);
+
+      if (value === '') {
+        setOptionsCollection(collectionOptions);
+        return;
+      }
+
+      const filterRegex = new RegExp(escapeSpecialRegExCharactersCollection(value), 'i');
+      const resultOptions = collectionOptions.filter((option) =>
+        option.label.match(filterRegex),
+      );
+      setOptionsCollection(resultOptions);
+    },
+    [collectionOptions, escapeSpecialRegExCharactersCollection],
+  );
+
+  const updateSelectionCollection = useCallback(
+    (selected) => {
+      console.log(selected)
+      const updatedSelectedOptions = collectionOptions.find(
+        (option) => option._id === selected
+      );
+
+      const isSelected = selectedOptionsCollection.findIndex(
+        (option) => option._id === updatedSelectedOptions._id
+      );
+
+      if (isSelected > -1) {
+        setSelectedOptionsCollection(
+          selectedOptionsCollection.filter(
+            (option) => option._id !== updatedSelectedOptions._id
+          )
+        );
+      } else {
+        setSelectedOptionsCollection([
+          ...selectedOptionsCollection,
+          {
+            value: updatedSelectedOptions?.value,
+            _id: updatedSelectedOptions?._id,
+          },
+        ]);
+      }
+
+      updateTextCollection("");
+    },
+    [selectedOptionsCollection, updateTextCollection],
+  );
+
+  const removeTagCollection = useCallback(
+    (tag) => () => {
+      const options = [...selectedOptionsCollection];
+      options.splice(options.indexOf(tag), 1);
+      setSelectedOptionsCollection(options);
+    },
+    [selectedOptionsCollection],
+  );
+
+  
+
+  const tagsMarkupCollection = selectedOptionsCollection?.map((option) => (
+    <Tag key={`option-${option}`} onRemove={removeTagCollection(option)}>
+      {option.value} 
+    </Tag>
+  ));
+           
+  const optionsMarkupCollection =
+    optionsCollection.length > 0
+      ? optionsCollection.map((option) => {
+        const { label, value, _id } = option;
+        return (
+          <Listbox.Option
+            key={_id}
+            value={_id}
+            selected={selectedOptionsCollection.some(
+              (selected) => selected?._id === _id
+            )}
+          
+            accessibilityLabel={label}
+          >
+            {label}
+          </Listbox.Option>
+          );
+        })
+      : null;
+
+
+  // ====================================
+
+
+  useEffect(()=>{
+    setImagePath(settingsData?.Image || "")
+    setSelectedOptions(settingsData?.Product || [])
+  },[settingsData])
+
+
+
   const handleSubmit = async () => {
     try {
+
       dispatch(
         _dispatch_UPDATE_SETTINGS_DETAILS({
           fetchFn: fetch,
           inputs: {
             loadingKey: "first_form",
-            Name: firstName,
-            Email: email,
-            Password: password,
-            Checked: newsletter,
             Image: imagePath,
-
+            Title: title ,
+            Product :selectedOptions,
+            Collection :selectedOptionsCollection,    
             type: "settings-data",
           },
         })
       );
-
-      setFirstName("");
+        
       setNewsletter(false);
     } catch (error) {
       console.log(error);
     }
   };
-  useEffect(() => {
-    setImagePath();
-  }, []);
 
-  useEffect(() => {
-    setEmail(settingsData?.Email || "");
-    setFirstName(settingsData?.Name || "");
-    setPassword(settingsData?.Password || "");
-    setImagePath(settingsData?.Image || "");
-  }, [settingsData]);
+
+  // useEffect(() => {
+  //   setEmail(settingsData?.Email || "");
+  //   setFirstName(settingsData?.Name || "");
+  //   setPassword(settingsData?.Password || "");
+  //   setImagePath(settingsData?.Image || "");
+  // }, [settingsData]);
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
       const validImageTypes = ["image/gif", "image/jpeg", "image/png"];
-      if (!validImageTypes.includes(selectedFile.type)) {
-        // setToastMessage("Invalid file type! Please upload an image.");
-        // setIsToastError(true);
-        // toggleActiveToast();
+      if (!validImageTypes?.includes(selectedFile.type)) {
+       
         return;
       }
       setFile(selectedFile);
@@ -167,9 +303,11 @@ const FirstAppSeting = () => {
 
   const handleUploadImage = async () => {
     if (!file) return;
+    console.log(file,"file img---")
     setUploading(true);
 
     const formData = new FormData();
+    console.log(formData,"formdata==")
     formData.append("image", file);
 
     try {
@@ -181,8 +319,7 @@ const FirstAppSeting = () => {
       if (response.ok) {
         const data = await response.json();
         setImagePath((prev) => `/uploads/${data.image.filename}`);
-
-        
+        console.log(data,"data--=")
         setFile(null); 
       } else {
         throw new Error("Failed to upload the image.");
@@ -195,17 +332,19 @@ const FirstAppSeting = () => {
     }
   };
 
+  const handleTextFieldChange = useCallback(
+    (value) => setTitle(value),
+    [],
+  );
+  
   const handleNewsLetterChange = useCallback(
     (value) => setNewsletter(value),
     []
   );
 
-  // const handleEmailChange = useCallback((value) => setEmail(value), []);
-  // const handlePasswordChange = useCallback((value) => setPassword(value), []);
-  // const handleFirstNamelChange = useCallback(
-  //   (value) => setFirstName(value),
-  //   []
-  // );
+useEffect(()=>{
+  console.log(imagePath,"img path")
+},[imagePath])
   const uploadedFileMarkup = (
     <div style={{ padding: "0" }}>
       {imagePath ? (
@@ -238,29 +377,66 @@ const FirstAppSeting = () => {
     </div>
   );
 
+   
+
+
+  
   useEffect( ()=>{
     const getProducts = async()=>{
       try {
         const res = await fetch ("/api/getProducts")
         console.log(res,"it is working")
         const resjson = await res.json()
-        // console.log(resjson,"hit")
-     
-      let temparr = []
-      
+        // console.log(resjson,"hit===")
+    
+   
+      let temparr1=[]
 resjson.products.forEach(x=>{
   let tempobj= {label: x.node.title, value: x.node.id}
- 
-  temparr.push(tempobj)
+  let idarr = x.node.id.split("/");
+          let id = idarr[idarr.length - 1]
+  temparr1.push({
+    value: x.node.title,
+    label: x.node.title,
+    _id: id,
+  });
 })
-setProductsOptions(temparr)
+setProductsOptions(temparr1)
 
         setProductData(resjson)
      } catch (error) {
       console.log(error,"err") 
      }
     }
+
+    const getCollection = async()=>{
+      try {
+        const res = await fetch ("/api/getCollections")
+        console.log(res,"it is working")
+        const resjson = await res.json()
+        // console.log(resjson,"hit===")
+    
+   
+      let temparr1=[]
+resjson.collections.forEach(x=>{
+  let tempobj= {label: x.node.title, value: x.node.id}
+  let idarr = x.node.id.split("/");
+          let id = idarr[idarr.length - 1]
+  temparr1.push({
+    value: x.node.title,
+    label: x.node.title,
+    _id: id,
+  });
+})
+setCollectionOptions(temparr1)
+
+        setCollectionData(resjson)
+     } catch (error) {
+      console.log(error,"err") 
+     }
+    }
     getProducts()
+    getCollection()
    
   },[])
 
@@ -269,10 +445,43 @@ setProductsOptions(temparr)
     [],
   );
 
+// modal-------------//
+  const [active, setActive] = useState(false);
 
+  const handleChange = useCallback(() => setActive(!active), [active]);
+
+  const activator = <Button onClick={handleChange}>Add More</Button>;
  
-  return (
-    <LegacyCard>
+
+// end????/////
+// /========table ==========////
+
+const rows = [
+  ['asc' ,<img src={imagePath} />, <Icon source={DeleteIcon}tone="base"/>,],
+ 
+];
+ ////////////////////////////////
+
+    
+
+
+  return (  
+    <>
+      <div style={{height: '500px'}}>
+     
+        <Modal
+          activator={activator}
+          open={active}
+          onClose={handleChange}
+          title="Add More"
+          primaryAction={{
+            content: 'Close',
+            onAction: handleChange,
+          }}
+        >
+          <Modal.Section>
+           
+          <LegacyCard>
       <LegacyCard.Section>
         <Form onSubmit={handleSubmit}>
           <FormLayout>
@@ -297,17 +506,17 @@ setProductsOptions(temparr)
               ref={fileInputRef}
               style={{ display: "none" }}
               accept="image/*"
-              onChange={handleFileChange}
+              onChange={handleFileChange}  
             />
-            {/* <div className="drpdwn"> */}
-             {/* <label for="sizeChart" style={{fontSize:"20px"}}>Size Chart</label> */}
-             {/* <Select
-                   label="Collection"
-                   options={productsOptions}
-                   onChange={handleSelectChange}
-                   value={selected}
-                 /> */}
-             {/* </div> */}
+
+           <TextField
+                //  label=" zone namShippinge"
+                 value={title}
+                 onChange={handleTextFieldChange}
+                 placeholder="Title"
+                 autoComplete="off"
+               />
+
              <Combobox
                allowMultiple
                activator={
@@ -319,6 +528,7 @@ setProductsOptions(temparr)
                 value={inputValue}
                 placeholder="Search Products"
                 autoComplete="off"
+               
           />
         }
       >
@@ -327,17 +537,69 @@ setProductsOptions(temparr)
         ) : null}
       </Combobox>
       <Text>
-        <LegacyStack>{tagsMarkup}</LegacyStack>
+        <LegacyStack >{tagsMarkup}</LegacyStack>
       </Text>
-            <Button submit>Submit</Button>
+
+
+      <Combobox
+               allowMultiple
+               activator={
+            <Combobox.TextField
+                prefix={<Icon source={SearchIcon} />}
+                onChange={updateTextCollection}
+                label="Search Collection"
+                labelHidden
+                value={inputValueCollection}
+                placeholder="Search Collection"
+                autoComplete="off"
+               
+          />
+        }
+      >
+        {optionsMarkupCollection ? (
+          <Listbox onSelect={updateSelectionCollection}>{optionsMarkupCollection}</Listbox>
+        ) : null}
+      </Combobox>
+      <Text>
+        <LegacyStack >{tagsMarkupCollection}</LegacyStack>
+      </Text>
+      {/* <CollectionSetting
+     selectedOptions={selectedOptions}
+     setConnectingCollection={setConnectingCollection}
+     /> */}
+             <Button submit>Submit</Button>  
 
           </FormLayout>
         </Form>
      
       </LegacyCard.Section>
     </LegacyCard>
-
+          </Modal.Section>
+        </Modal>
+      
+    </div> 
     
+   <div style={{height:'500px'}}>
+      <LegacyCard>
+        <DataTable
+          columnContentTypes={[
+            'text',
+            'text',
+            'text',
+            
+          ]}
+          headings={[
+            'Title',
+            'Image',
+            '',
+            
+            
+          ]}
+          rows={rows}
+        />
+      </LegacyCard>
+      </div>
+    </>
   );
 };
 

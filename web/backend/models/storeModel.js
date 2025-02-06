@@ -10,23 +10,27 @@ const storeModel = mongoose.Schema(
       type: String,
       required: true,
     },
-    Name: {
+    Product: {
+      type: Array,
+      default: [],
+    },
+    Collection :{
+      type: Array,
+      default:[],
+    },
+    Title: {
       type: String,
       default: "",
     },
-    Email: {
-      type: String,
-      default: "",
-    },
-    Password: {
-      type: String,
-      default: "",
-    },
+    // Password: {
+    //   type: String,
+    //   default: "",
+    // },
 
-    Checked: {
-      type: Boolean,
-      default: false,
-    },
+    // Checked: {
+    //   type: Boolean,
+    //   default: false,
+    // },
     Image: {
       type: String,
       default: "",

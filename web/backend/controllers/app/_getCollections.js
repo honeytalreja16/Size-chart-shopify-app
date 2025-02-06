@@ -1,6 +1,7 @@
 import Helper_getCollectionsUsingGraphql from "../../helpers/Helper_getCollectionsUsingGraphql.js";
 
 const _getCollections = async (req, res) => {
+  console.log("78787=====")
   const cursor = req.query.cursor
     ? `first:20,after: "${req.query.cursor}"`
     : "first:20";
