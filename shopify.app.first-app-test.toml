@@ -3,7 +3,7 @@
 client_id = "738e56dadf9e397d768ca8cba31814ad"
 name = "First app test"
 handle = "first-app-test-36"
-application_url = "https://ourselves-expressed-chambers-experience.trycloudflare.com"
+application_url = "https://federation-resources-celebs-ordering.trycloudflare.com"
 embedded = true
 
 [build]
@@ -16,9 +16,9 @@ scopes = "read_products"
 
 [auth]
 redirect_urls = [
-  "https://ourselves-expressed-chambers-experience.trycloudflare.com/auth/callback",
-  "https://ourselves-expressed-chambers-experience.trycloudflare.com/auth/shopify/callback",
-  "https://ourselves-expressed-chambers-experience.trycloudflare.com/api/auth/callback"
+  "https://federation-resources-celebs-ordering.trycloudflare.com/auth/callback",
+  "https://federation-resources-celebs-ordering.trycloudflare.com/auth/shopify/callback",
+  "https://federation-resources-celebs-ordering.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

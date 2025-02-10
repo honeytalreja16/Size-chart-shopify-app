@@ -28,13 +28,13 @@ import { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import { _dispatch_UPDATE_SETTINGS_DETAILS } from "../../redux/actions/webiatorActions"; 
+import AddMoreModal from "./AddMoreModal";
 
 
 
 const FirstAppSeting = () => {    
   const [selected, setSelected] = useState('snowboard');
   const [title, setTitle] = useState('');
-  const [connectingCollection,setConnectingCollection] = useState()
   const [productData,setProductData] = useState([])
   const [collectionData,setCollectionData] = useState([])
   const [imagePath, setImagePath] = useState("");
@@ -252,10 +252,13 @@ const FirstAppSeting = () => {
 
 
   useEffect(()=>{
+
     setImagePath(settingsData?.Image || "")
     setSelectedOptions(settingsData?.Product || [])
+    setSelectedOptionsCollection(settingsData?.Collection || [])
+    setTitle(settingsData?.Title || [])
+    
   },[settingsData])
-
 
 
   const handleSubmit = async () => {
@@ -282,12 +285,6 @@ const FirstAppSeting = () => {
   };
 
 
-  // useEffect(() => {
-  //   setEmail(settingsData?.Email || "");
-  //   setFirstName(settingsData?.Name || "");
-  //   setPassword(settingsData?.Password || "");
-  //   setImagePath(settingsData?.Image || "");
-  // }, [settingsData]);
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -445,147 +442,37 @@ setCollectionOptions(temparr1)
     [],
   );
 
-// modal-------------//
+//edit modal-------------//
   const [active, setActive] = useState(false);
 
-  const handleChange = useCallback(() => setActive(!active), [active]);
+  const handleChange = useCallback(() => {
+    console.log("click")
+    setActive(!active)}, [active]);
 
-  const activator = <Button onClick={handleChange}>Add More</Button>;
+  const activator = <Button onClick={handleChange} plain icon={EditIcon}/>;
  
 
-// end????/////
-// /========table ==========////
+
 
 const rows = [
-  ['asc' ,<img src={imagePath} />, <Icon source={DeleteIcon}tone="base"/>,],
+  [<div>{title}</div> ,
+  <img className="tableImg" style={{height:"80px"}} src={imagePath} />,
+  <div style={{display:"flex",gap:"10px",alignItems:"center"}}>{activator} <Icon source={DeleteIcon}tone="base"/></div>,],
  
 ];
- ////////////////////////////////
-
-    
 
 
   return (  
     <>
-      <div style={{height: '500px'}}>
-     
-        <Modal
-          activator={activator}
-          open={active}
-          onClose={handleChange}
-          title="Add More"
-          primaryAction={{
-            content: 'Close',
-            onAction: handleChange,
-          }}
-        >
-          <Modal.Section>
-           
-          <LegacyCard>
-      <LegacyCard.Section>
-        <Form onSubmit={handleSubmit}>
-          <FormLayout>
-            <Checkbox
-              label="Sign up for the Polaris newsletter"
-              checked={newsletter}
-              onChange={handleNewsLetterChange}
-            />
-            
-            {uploadedFileMarkup}
-            {uploading ? (
-              <Button disabled>Uploading...</Button>
-            ) : file ? (
-              <Button onClick={handleUploadImage}>Upload Image</Button>
-            ) : (
-              <Button onClick={() => fileInputRef.current.click()}>
-                Select Image
-              </Button>
-            )}
-            <input
-              type="file"
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              accept="image/*"
-              onChange={handleFileChange}  
-            />
-
-           <TextField
-                //  label=" zone namShippinge"
-                 value={title}
-                 onChange={handleTextFieldChange}
-                 placeholder="Title"
-                 autoComplete="off"
-               />
-
-             <Combobox
-               allowMultiple
-               activator={
-            <Combobox.TextField
-                prefix={<Icon source={SearchIcon} />}
-                onChange={updateText}
-                label="Search Products"
-                labelHidden
-                value={inputValue}
-                placeholder="Search Products"
-                autoComplete="off"
-               
-          />
-        }
-      >
-        {optionsMarkup ? (
-          <Listbox onSelect={updateSelection}>{optionsMarkup}</Listbox>
-        ) : null}
-      </Combobox>
-      <Text>
-        <LegacyStack >{tagsMarkup}</LegacyStack>
-      </Text>
-
-
-      <Combobox
-               allowMultiple
-               activator={
-            <Combobox.TextField
-                prefix={<Icon source={SearchIcon} />}
-                onChange={updateTextCollection}
-                label="Search Collection"
-                labelHidden
-                value={inputValueCollection}
-                placeholder="Search Collection"
-                autoComplete="off"
-               
-          />
-        }
-      >
-        {optionsMarkupCollection ? (
-          <Listbox onSelect={updateSelectionCollection}>{optionsMarkupCollection}</Listbox>
-        ) : null}
-      </Combobox>
-      <Text>
-        <LegacyStack >{tagsMarkupCollection}</LegacyStack>
-      </Text>
-      {/* <CollectionSetting
-     selectedOptions={selectedOptions}
-     setConnectingCollection={setConnectingCollection}
-     /> */}
-             <Button submit>Submit</Button>  
-
-          </FormLayout>
-        </Form>
-     
-      </LegacyCard.Section>
-    </LegacyCard>
-          </Modal.Section>
-        </Modal>
-      
-    </div> 
+    <AddMoreModal/>
     
-   <div style={{height:'500px'}}>
+   <div style={{height:'500px' , width:"639px"}}>
       <LegacyCard>
         <DataTable
           columnContentTypes={[
             'text',
             'text',
-            'text',
+            'button',
             
           ]}
           headings={[
@@ -597,6 +484,114 @@ const rows = [
           ]}
           rows={rows}
         />
+         <div >
+     
+     <Modal
+       activator={activator}
+       open={active}
+       onClose={handleChange}
+       title="Edit"
+       primaryAction={{
+         content: 'Close',
+         onAction: handleChange,
+       }}
+     >
+       <Modal.Section>
+        
+       <LegacyCard>
+   <LegacyCard.Section>
+     <Form onSubmit={handleSubmit}>
+       <FormLayout>
+         <Checkbox
+           label="Sign up for the Polaris newsletter"
+           checked={newsletter}
+           onChange={handleNewsLetterChange}
+         />
+         
+         {uploadedFileMarkup}
+         {uploading ? (
+           <Button disabled>Uploading...</Button>
+         ) : file ? (
+           <Button onClick={handleUploadImage}>Upload Image</Button>
+         ) : (
+           <Button onClick={() => fileInputRef.current.click()}>
+             Select Image
+           </Button>
+         )}
+         <input
+           type="file"
+           ref={fileInputRef}
+           style={{ display: "none" }}
+           accept="image/*"
+           onChange={handleFileChange}  
+         />
+
+        <TextField
+             //  label=" zone namShippinge"
+              value={title}
+              onChange={handleTextFieldChange}
+              placeholder="Title"
+              autoComplete="off"
+            />
+
+          <Combobox
+            allowMultiple
+            activator={
+         <Combobox.TextField
+             prefix={<Icon source={SearchIcon} />}
+             onChange={updateText}
+             label="Search Products"
+             labelHidden
+             value={inputValue}
+             placeholder="Search Products"
+             autoComplete="off"
+            
+       />
+     }
+   >
+     {optionsMarkup ? (
+       <Listbox onSelect={updateSelection}>{optionsMarkup}</Listbox>
+     ) : null}
+   </Combobox>
+   <Text>
+     <LegacyStack >{tagsMarkup}</LegacyStack>
+   </Text>
+
+
+   <Combobox
+            allowMultiple
+            activator={
+         <Combobox.TextField
+             prefix={<Icon source={SearchIcon} />}
+             onChange={updateTextCollection}
+             label="Search Collection"
+             labelHidden
+             value={inputValueCollection}
+             placeholder="Search Collection"
+             autoComplete="off"
+            
+       />
+     }
+   >
+     {optionsMarkupCollection ? (
+       <Listbox onSelect={updateSelectionCollection}>{optionsMarkupCollection}</Listbox>
+     ) : null}
+   </Combobox>
+   <Text>
+     <LegacyStack >{tagsMarkupCollection}</LegacyStack>
+   </Text>
+  
+          <Button submit>Submit</Button>  
+
+       </FormLayout>
+     </Form>
+  
+   </LegacyCard.Section>
+ </LegacyCard>
+       </Modal.Section>
+     </Modal>
+   
+        </div> 
       </LegacyCard>
       </div>
     </>

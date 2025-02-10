@@ -1,12 +1,8 @@
 import mongoose from "mongoose";
 
-const storeModel = mongoose.Schema(
+const sizechartModel = mongoose.Schema(
   {
     store_domain: {
-      type: String,
-      required: true,
-    },
-    app_id: {
       type: String,
       required: true,
     },
@@ -33,6 +29,6 @@ const storeModel = mongoose.Schema(
   }
 );
 
-const Stores = mongoose.model("Store", storeModel);
+const Sizecharts = mongoose.model("Sizechart", sizechartModel);
 
-export default Stores;
+export default Sizecharts;

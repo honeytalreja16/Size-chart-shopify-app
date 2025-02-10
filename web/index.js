@@ -33,6 +33,7 @@ import _getPages from "./backend/controllers/app/_getPages.js";
 import _sendqueryMail from "./backend/controllers/app/_sendqueryMail.js";
 import _AddLoyaltyPoints from "./backend/controllers/app/_AddLoyaltyPoints.js";
 import _getShopifyShopDetails from "./backend/controllers/app/_getShopifyShopDetails.js";
+import _addNewSizeChart from "./backend/controllers/app/_addNewSizeChart.js";
 // store front
 
 dotenv.config({});
@@ -117,6 +118,9 @@ app.post(
   upload.single("image"),
   _uploadCompressedImage
 );
+app.post("/api/addnewSizeChart",_addNewSizeChart);
+// app.get("/api/getItems",_getItems)
+
 app.get("/api/getAssetFile", _getAssetFile);
 app.post("/api/query-email", _sendqueryMail);
 app.post("/api/addLoyaltyPoints", _AddLoyaltyPoints);
