@@ -12,7 +12,6 @@ import cors from "cors";
 
 import connectDB from "./backend/configs/db.js";
 
-// app
 import _getStoreDetails from "./backend/controllers/app/_getStoreDetails.js";
 import _updateStoreDetails from "./backend/controllers/app/_updateStoreDetails.js";
 import _getCollections from "./backend/controllers/app/_getCollections.js";
@@ -34,6 +33,10 @@ import _sendqueryMail from "./backend/controllers/app/_sendqueryMail.js";
 import _AddLoyaltyPoints from "./backend/controllers/app/_AddLoyaltyPoints.js";
 import _getShopifyShopDetails from "./backend/controllers/app/_getShopifyShopDetails.js";
 import _addNewSizeChart from "./backend/controllers/app/_addNewSizeChart.js";
+import _getItems from "./backend/controllers/app/_getItems.js";
+
+import _UpdateSizeChart from "./backend/controllers/app/_UpdateSizeChart.js";
+import _deleteSizeChart from "./backend/controllers/app/_deleteSizeChart.js";
 // store front
 
 dotenv.config({});
@@ -118,9 +121,10 @@ app.post(
   upload.single("image"),
   _uploadCompressedImage
 );
+app.delete("/api/deleteSizeChart/:id",_deleteSizeChart)
 app.post("/api/addnewSizeChart",_addNewSizeChart);
-// app.get("/api/getItems",_getItems)
-
+app.post("/api/updateSizeChart",_UpdateSizeChart)
+app.get("/api/getItems",_getItems)
 app.get("/api/getAssetFile", _getAssetFile);
 app.post("/api/query-email", _sendqueryMail);
 app.post("/api/addLoyaltyPoints", _AddLoyaltyPoints);

@@ -23,6 +23,10 @@ const sizechartModel = mongoose.Schema(
       type: String,
       default: "",
     },
+    Checked: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

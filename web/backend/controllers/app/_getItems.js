@@ -1,9 +1,14 @@
+import Sizecharts from "../../models/sizeChartModal.js"
+
 const _getItems = async (req, res) => {
-        try {
-            const sizeCharts = await sizeChartModel.find(); 
-            res.status(200).json(sizeCharts);
-        } catch (error) {
-            res.status(500).json({ message: "Error fetching size charts", error });
-        }
+      try {
+        const sizeCharts = await Sizecharts.find({
+            store_domain: res.locals.shopify.session.shop
+        })
+        res.status(200).send({sizeCharts})
+      } catch (error) {
+        
+      }
     }
 
+export default _getItems

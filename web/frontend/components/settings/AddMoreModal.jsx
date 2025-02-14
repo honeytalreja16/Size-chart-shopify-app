@@ -20,10 +20,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useAuthenticatedFetch } from "../../hooks/useAuthenticatedFetch";
 import {SearchIcon} from '@shopify/polaris-icons';
 
-const AddMoreModal = () => {
-      const [currentList, setCurrentList]=useState()
-      // const [sizeChartData, setSizeChartData] = useState([]);
+const AddMoreModal = ({setList,list}) => {
       const [selectedModal, setSelectedModal] = useState('snowboard');
+      const [data,setData]=useState()
       const [titleModal, setTitleModal] = useState('');
       const [productDataModal,setProductDataModal] = useState([])
       const [collectionDataModal,setCollectionDataModal] = useState([])
@@ -116,8 +115,8 @@ const AddMoreModal = () => {
        ));
                 
        const optionsMarkupModal =
-         optionsModal.length > 0
-           ? optionsModal.map((option) => {
+       productsOptionsModal.length > 0
+           ? productsOptionsModal.map((option) => {
              const { label, value, _id } = option;
              return (
                <Listbox.Option
@@ -166,6 +165,9 @@ const AddMoreModal = () => {
          [collectionOptionsModal, escapeSpecialRegExCharactersCollectionModal],
        );
      
+
+
+      
        const updateSelectionCollectionModal = useCallback(
          (selected) => {
            console.log(selected)
@@ -198,6 +200,8 @@ const AddMoreModal = () => {
          [selectedOptionsCollectionModal, updateTextCollectionModal],
        );
      
+
+
        const removeTagCollectionModal = useCallback(
          (tagModal) => () => {
            const optionsModal = [...selectedOptionsCollectionModal];
@@ -215,16 +219,17 @@ const AddMoreModal = () => {
          </Tag>
        ));
                 
+     
        const optionsMarkupCollectionModal =
-         optionsCollectionModal.length > 0
-           ? optionsCollectionModal.map((option) => {
+         collectionOptionsModal.length > 0
+           ? collectionOptionsModal.map((option) => {
              const { label, value, _id } = option;
              return (
                <Listbox.Option
                  key={_id}
                  value={_id}
-                 selectedModal={selectedOptionsCollectionModal.some(
-                   (selectedModal) => selectedModal?._id === _id
+                 selected={selectedOptionsCollectionModal.some(
+                   (selected) => selected?._id === _id
                  )}
                
                  accessibilityLabel={label}
@@ -234,7 +239,6 @@ const AddMoreModal = () => {
                );
              })
            : null;
-     
      
    
      
@@ -250,12 +254,32 @@ const AddMoreModal = () => {
                 Title:titleModal,
                 Product : selectedOptionsModal,
                 Collection : selectedOptionsCollectionModal,
-                Image : imagePathModal
+                Image : imagePathModal,
+                Checked : newsletterModal
              }),
           })
-          setCurrentList(res)
-          console.log(setCurrentList,"rest data---")
+          handleModal()
            setNewsletterModal(false);
+
+           setList([...list, {
+            Title: titleModal,
+            Product: selectedOptionsModal,
+            Collection: selectedOptionsCollectionModal,
+            Checked : newsletterModal,
+            Image: imagePathModal
+          }]);
+          // let temparr= list;
+          // temparr.push({
+          //   Title:titleModal,
+          //   Product : selectedOptionsModal,
+          //   Collection : selectedOptionsCollectionModal,
+          //   Image : imagePathModal
+          // })
+          // console.log(temparr,"arrayy----")
+          
+          //            setList(temparr)
+          
+
          } catch (error) {
            console.log(error);
          }
@@ -313,8 +337,14 @@ const AddMoreModal = () => {
        );
        
        const handleNewsLetterChange = useCallback(
-         (value) => setNewsletterModal(value),
-         []
+        (value) => {
+          console.log("hit checked----")
+          setNewsletterModal((prevModal) => ({
+            ...prevModal,
+            Checked: value,
+          }));
+        },
+        []
        );
      
      useEffect(()=>{
@@ -387,7 +417,7 @@ const AddMoreModal = () => {
          const getCollectionModal = async()=>{
            try {
              const res = await fetch ("/api/getCollections")
-             console.log(res,"it is working")
+            //  console.log(res,"it is working")
              const resjson = await res.json()
              console.log(resjson,"collection hit---")
          
@@ -415,14 +445,13 @@ const AddMoreModal = () => {
          }
          getProductsModal()
          getCollectionModal()
-         setCurrentList()
-         console.log(setCurrentList,"listtt")
+      
        },[])
      
-       const handleSelectChangeModal = useCallback(
-         (value) => setSelectedModal(value),
-         [],
-       );
+      //  const handleSelectChangeModal = useCallback(
+      //    (value) => setSelectedModal(value),
+      //    [],
+      //  );
 
 
        const [addModal, setAddModal] = useState(false);
@@ -430,30 +459,6 @@ const AddMoreModal = () => {
        const handleModal = useCallback(() => setAddModal(!addModal), [addModal]);
       
        const start = <Button onClick={handleModal}>Add More</Button>;
-
-
-    
-         const rows = [
-          [   <div>{titleModal}</div>  , 
-            <img src={imagePathModal} style={{height:"80px"}} alt="" />,
-             124689],
-          
-         
-        ]
-    
-   
-  
-     
-
-   
-        // const handleDelete = async (id) => {
-        //   try {
-        //     await fetch(`/api/deleteSizeChart/${id}`, { method: "DELETE" });
-        //     setSizeChartData(sizeChartData.filter(item => item._id !== id));
-        //   } catch (error) {
-        //     console.error("Error deleting size chart", error);
-        //   }
-        // };
 
   return (
 
@@ -464,6 +469,10 @@ const AddMoreModal = () => {
                  open={addModal}
                  onClose={handleModal}
                  title="Add More"
+                primaryAction={{
+                  content: 'Submit',
+                  onAction: handleSubmitModal,
+                }}
                  secondaryActions={[
                    {
                      content: 'Close',
@@ -477,7 +486,7 @@ const AddMoreModal = () => {
             <Form onSubmit={handleSubmitModal}>
               <FormLayout>
                 <Checkbox
-                  label="Sign up for the Polaris newsletter"
+                  label="Unable"
                   checked={newsletterModal}
                   onChange={handleNewsLetterChange}
                 />
@@ -501,7 +510,6 @@ const AddMoreModal = () => {
                 />
        
                <TextField
-                    //  label=" zone namShippinge"  
                      value={titleModal}
                      onChange={handleTextFieldChangeModal}
                      placeholder="Title"
@@ -554,7 +562,7 @@ const AddMoreModal = () => {
             <LegacyStack >{tagsMarkupCollectionModal }</LegacyStack>
           </Text>
          
-                 <Button submit>Submit</Button>  
+                 {/* <Button submit>Submit</Button>   */}
        
               </FormLayout>
             </Form>
@@ -564,39 +572,7 @@ const AddMoreModal = () => {
                  </Modal.Section>
                </Modal>
            </div>
-         
-
-           <div className="tableAddMore" style={{width:"639px"}}>
-           <LegacyCard>
-        <DataTable
-          columnContentTypes={[
-            'text',
-            'image',
-            'button',
-           
-          ]}
-          headings={[
-            'Title',
-            'Image',
-            '',
-            
-          ]}
-          rows={rows}
-        />
-      </LegacyCard>
-           </div>
-           {/* <LegacyCard>
-        <DataTable
-          columnContentTypes={['text', 'image', 'text']}
-          headings={['Title', 'Image', 'Actions']}
-          rows={sizeChartData.map((item) => [
-            item.Title,
-            <Thumbnail size="large" source={item.Image} alt="" />,
-            <Button destructive onClick={() => handleDelete(item._id)}>Delete</Button>
-          ])}
-        />
-      </LegacyCard> */}
-           
+          
    </>           
   )
 }

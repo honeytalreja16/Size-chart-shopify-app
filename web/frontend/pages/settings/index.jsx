@@ -7,9 +7,9 @@ export default function Dashboard() {
 
   return (
     <Frame>
-      <Page title="Settings">
+      
         <FirstAppSeting />
-      </Page>
+      
     </Frame>
   );
 }

@@ -16,6 +16,7 @@ import {
   Modal,
   DataTable,
   TextField,
+  Page,
 } from "@shopify/polaris";
 import {SearchIcon} from '@shopify/polaris-icons';
 import {
@@ -33,7 +34,9 @@ import AddMoreModal from "./AddMoreModal";
 
 
 const FirstAppSeting = () => {    
-  const [selected, setSelected] = useState('snowboard');
+  const [list , setList] = useState([])
+  const [currentModal,setCurrentModal] = useState({})
+  // const [selected, setSelected] = useState('snowboard');
   const [title, setTitle] = useState('');
   const [productData,setProductData] = useState([])
   const [collectionData,setCollectionData] = useState([])
@@ -51,6 +54,28 @@ const FirstAppSeting = () => {
   const [selectedOptionsCollection, setSelectedOptionsCollection] = useState([]);
   const [inputValueCollection, setInputValueCollection] = useState('');    
   const [optionsCollection, setOptionsCollection] = useState(collectionOptions);
+
+
+  useEffect(async()=>{
+    try {
+      const res = await fetch("/api/getItems");
+      const resjson = await res.json();
+      console.log(resjson,"all size charts ")
+     setList(resjson.sizeCharts)
+    } catch (error) {
+      console.log(error,"get size chart eror ")
+    }
+  },[])
+
+// useEffect(() => {
+//   setTitle(setList?.Title || "");
+//   setImagePath(setList.Image || "")
+// }, [])
+
+
+
+
+
 
   const escapeSpecialRegExCharacters = useCallback(
     (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
@@ -71,6 +96,7 @@ const FirstAppSeting = () => {
         option.label.match(filterRegex),
       );
       setOptions(resultOptions);
+      console.log(setOptions,"option-----")
     },
     [productsOptions, escapeSpecialRegExCharacters],
   );
@@ -78,19 +104,23 @@ const FirstAppSeting = () => {
   const updateSelection = useCallback(
     (selected) => {
       console.log(selected)
+      
       const updatedSelectedOptions = productsOptions.find(
         (option) => option._id === selected
       );
-
+      
       const isSelected = selectedOptions.findIndex(
+        
         (option) => option._id === updatedSelectedOptions._id
+        
       );
-
+     
       if (isSelected > -1) {
         setSelectedOptions(
           selectedOptions.filter(
             (option) => option._id !== updatedSelectedOptions._id
           )
+          
         );
       } else {
         setSelectedOptions([
@@ -101,7 +131,6 @@ const FirstAppSeting = () => {
           },
         ]);
       }
-
       updateText("");
     },
     [selectedOptions, updateText],
@@ -117,6 +146,7 @@ const FirstAppSeting = () => {
   );
 
   useEffect(()=>{ 
+   
     console.log(selectedOptions,"stt---")
   },[selectedOptions])
   
@@ -179,10 +209,12 @@ const FirstAppSeting = () => {
   );
 
   const updateSelectionCollection = useCallback(
+  
     (selected) => {
       console.log(selected)
       const updatedSelectedOptions = collectionOptions.find(
         (option) => option._id === selected
+        
       );
 
       const isSelected = selectedOptionsCollection.findIndex(
@@ -278,7 +310,7 @@ const FirstAppSeting = () => {
         })
       );
         
-      setNewsletter(false);
+      // setNewsletter(false);
     } catch (error) {
       console.log(error);
     }
@@ -290,14 +322,18 @@ const FirstAppSeting = () => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
       const validImageTypes = ["image/gif", "image/jpeg", "image/png"];
+      
+      
+      
       if (!validImageTypes?.includes(selectedFile.type)) {
        
         return;
+        
       }
       setFile(selectedFile);
     }
   };
-
+ 
   const handleUploadImage = async () => {
     if (!file) return;
     console.log(file,"file img---")
@@ -329,13 +365,24 @@ const FirstAppSeting = () => {
     }
   };
 
+  // const handleTextFieldChange = useCallback(
+  //   (value) => setCurrentModal({...currentModal , Title:value}),
+  //   [],
+  // );
   const handleTextFieldChange = useCallback(
-    (value) => setTitle(value),
-    [],
+    (value) => {
+      setCurrentModal((prevModal) => ({
+        ...prevModal,
+        Title: value,
+      }));
+    },
+    []
   );
   
   const handleNewsLetterChange = useCallback(
-    (value) => setNewsletter(value),
+    (value) => {
+     setNewsletter(value)
+    },
     []
   );
 
@@ -349,7 +396,7 @@ useEffect(()=>{
           <Thumbnail
             size="large"
             alt="Uploaded image"
-            source={"../.." + imagePath}
+            source={currentModal.Image}
           />
           <Text variant="bodySm" as="p">
             Uploaded image
@@ -437,57 +484,117 @@ setCollectionOptions(temparr1)
    
   },[])
 
-  const handleSelectChange = useCallback(
-    (value) => setSelected(value),
-    [],
-  );
+
 
 //edit modal-------------//
   const [active, setActive] = useState(false);
 
   const handleChange = useCallback(() => {
-    console.log("click")
+   
+    console.log("click active")
     setActive(!active)}, [active]);
 
-  const activator = <Button onClick={handleChange} plain icon={EditIcon}/>;
  
 
-
-
-const rows = [
-  [<div>{title}</div> ,
-  <img className="tableImg" style={{height:"80px"}} src={imagePath} />,
-  <div style={{display:"flex",gap:"10px",alignItems:"center"}}>{activator} <Icon source={DeleteIcon}tone="base"/></div>,],
+    
+const handleEditSizeChart = (sizechart)=>{
+  setCurrentModal(sizechart)
+  setSelectedOptions(sizechart.Product)
+  setSelectedOptionsCollection(sizechart.Collection)
+  setImagePath(sizechart.Image)
+  setNewsletter(sizechart.Checked)
+  console.log("click",sizechart)
  
-];
+  setActive(!active)
+
+}
+
+const handleUpdate = async()=>{
+   try {
+   console.log("hit",currentModal,newsletter)
+    const res = await fetch(`/api/updateSizeChart`,{
+      method : "POST",
+      headers:{"Content-Type": "application/json"},
+      body : JSON.stringify({
+        _id :currentModal?._id,
+        Title : currentModal?.Title,
+        Product : selectedOptions,
+        Collection: selectedOptionsCollection,
+        Image : imagePath,
+        Checked:newsletter,
+      })
+    })
+  
+    
+    const resjson = await res.json()
+    console.log(resjson,"inserted list-----")
+
+   setList((prevList)=>
+  prevList.map((item)=>
+    item._id === currentModal._id
+   ?{...item ,  Title : currentModal?.Title, Checked:newsletter, Product : selectedOptions,Collection: selectedOptionsCollection, Image : imagePath}
+    :item
+  ))
+
+
+
+   } catch (error) {
+    console.log(error)
+   }
+   handleChange()     
+}
+
+
+ 
+const handleDelete = async (id) => {
+  try {
+    await fetch(`/api/deleteSizeChart/${id}`, 
+      { method: "DELETE" });
+    setList(list.filter((x) => x._id !== id));
+    console.log("Deleted");
+  } catch (error) {
+    console.error("error dlt", error);
+  }
+};
+
 
 
   return (  
-    <>
-    <AddMoreModal/>
+    <Page title="Settings"  primaryAction={<AddMoreModal
+    setList={setList}
+    list={list}
+    currentModal={currentModal}
+    />}>
     
-   <div style={{height:'500px' , width:"639px"}}>
-      <LegacyCard>
-        <DataTable
-          columnContentTypes={[
-            'text',
-            'text',
-            'button',
-            
-          ]}
-          headings={[
-            'Title',
-            'Image',
-            '',
-            
-            
-          ]}
-          rows={rows}
-        />
+    
+   <div >
+  
+   <table style={{ width:"639px"}}>
+  <tr>
+    <th>Image</th>
+    <th>Title</th>
+    <th></th>
+  </tr>
+{  list?.map((x)=>
+    <tr style={{textAlign:"center",background:"white" ,height:"121px"}}>
+    <td><img className="tableImg" style={{height:"80px"}} src={x.Image} /></td>
+    <td>{x.Title}</td>
+    <td>
+
+      <Button onClick={()=>handleEditSizeChart(x)} plain icon={EditIcon} />
+
+      
+       <Button onClick={() => handleDelete(x._id)} plain icon={DeleteIcon} />
+       </td>
+  </tr>
+  )}
+
+ 
+</table>
          <div >
      
      <Modal
-       activator={activator}
+     
        open={active}
        onClose={handleChange}
        title="Edit"
@@ -495,6 +602,12 @@ const rows = [
          content: 'Close',
          onAction: handleChange,
        }}
+       secondaryActions={[
+        {
+          content: 'Update',
+          onClick: handleUpdate,
+        },
+      ]}
      >
        <Modal.Section>
         
@@ -503,7 +616,7 @@ const rows = [
      <Form onSubmit={handleSubmit}>
        <FormLayout>
          <Checkbox
-           label="Sign up for the Polaris newsletter"
+           label="Unable"
            checked={newsletter}
            onChange={handleNewsLetterChange}
          />
@@ -527,8 +640,7 @@ const rows = [
          />
 
         <TextField
-             //  label=" zone namShippinge"
-              value={title}
+              value={currentModal.Title}
               onChange={handleTextFieldChange}
               placeholder="Title"
               autoComplete="off"
@@ -581,7 +693,7 @@ const rows = [
      <LegacyStack >{tagsMarkupCollection}</LegacyStack>
    </Text>
   
-          <Button submit>Submit</Button>  
+          {/* <Button submit>Submit</Button>   */}
 
        </FormLayout>
      </Form>
@@ -592,9 +704,9 @@ const rows = [
      </Modal>
    
         </div> 
-      </LegacyCard>
+      
       </div>
-    </>
+    </Page>
   );
 };
 
